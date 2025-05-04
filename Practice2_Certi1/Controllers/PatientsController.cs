@@ -4,6 +4,7 @@ using Serilog;
 using Serilog.Core;
 using PatientManager.Models;
 using PatientManager.Services;
+using System.Runtime.InteropServices;
 
 namespace Practice2_Certi1.Controllers
 { 
@@ -18,9 +19,11 @@ namespace Practice2_Certi1.Controllers
         [HttpPost]
         public IActionResult CreatePatient([FromBody] Patient patient)
         {
+            Log.Debug("Requested to create a new patient");
             try
             {
                 var newPatient = _patientService.CreatePatient(patient);
+                Log.Information("New patient created successfully");
                 return Ok($"Paciente creado con grupo sanguíneo: {newPatient.BloodGroup}");
             }
             catch (Exception ex)
@@ -48,11 +51,12 @@ namespace Practice2_Certi1.Controllers
         [HttpGet]
         public IActionResult GetAllPatients()
         {
-            Log.Information("Requested to get all patients by the GET endpoint");
+            Log.Debug("Requested to get all patients by the GET endpoint");
 
             try
             {
                 var patients = _patientService.GetAllPatients();
+                Log.Information("Got all patients from patients.txt sucessfully");
                 return Ok(patients);
             }
             catch (Exception ex)
