@@ -13,6 +13,8 @@ namespace Practice2_Certi1.Controllers
         [HttpPost]
         public IActionResult CreatePatient([FromBody] PatientDto patient)
         {
+
+            Log.Information("Requested the creation of a patient");
             if (string.IsNullOrWhiteSpace(patient.Name) || string.IsNullOrWhiteSpace(patient.LastName) || string.IsNullOrWhiteSpace(patient.CI))
             {
                 Log.Information("Datos incompletos por parte del cliente"); 
@@ -23,7 +25,7 @@ namespace Practice2_Certi1.Controllers
             Random rnd = new Random();
             string randomBlood = bloodGroups[rnd.Next(bloodGroups.Length)];
 
-            string line = $"{patient.Name}, {patient.LastName}, {patient.CI}, {randomBlood}";
+            string line = $"{patient.Name},{patient.LastName},{patient.CI},{randomBlood}";
             string filePath = "patients.txt";
 
             try
@@ -59,7 +61,39 @@ namespace Practice2_Certi1.Controllers
         [HttpGet]
         public IActionResult GetAllPatients()
         {
-            return Ok();
+            Log.Information("Requested to get all patients by the GET endpoint");
+            string filePath = "patients.txt";
+            List<PatientWithBloodDto> patients = new List<PatientWithBloodDto>();
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                Log.Information("Retornando lista vacia por que el archivo no existe");
+                return Ok(patients);
+            }
+
+            try
+            {
+                Log.Debug("Intentando leer el archivo patients.txt");
+                var lines = System.IO.File.ReadAllLines(filePath);
+
+                foreach (var line in lines)
+                {
+                    var data = line.Split(',');
+
+                    if (data.Length == 4)
+                    {
+                        patients.Add(new PatientWithBloodDto { Name = data[0], LastName = data[1], CI = data[2], BloodGroup = data[3] });
+                    }
+                }
+
+                return Ok(patients);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error al leer pacientes: " + ex.Message);
+                throw ex;
+            }
+            
         }
 
         // Endpoint GET /patients/{ci}
@@ -77,4 +111,12 @@ namespace Practice2_Certi1.Controllers
         public string LastName { get; set; }
         public string CI { get; set; }
     }
+
+    public class PatientWithBloodDto : PatientDto
+    {
+        public string BloodGroup { get; set; }
+    }
+
 }
+
+
