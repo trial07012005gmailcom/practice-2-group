@@ -12,6 +12,7 @@ namespace PatientManager.Services
     {
         private readonly string filePath = "patients.txt";
 
+        //CREATE LOGIC
         public PatientWithBlood CreatePatient(Patient patient)
         {
             string[] bloodGroups = { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" };
@@ -32,6 +33,7 @@ namespace PatientManager.Services
             return fullPatient;
         }
 
+        //GET ALL LOGIC 
         public List<PatientWithBlood> GetAllPatients()
         {
             var patients = new List<PatientWithBlood>();
@@ -60,6 +62,7 @@ namespace PatientManager.Services
             return patients;
         }
 
+        //UPDATE LOGIC 
         public bool UpdatePatient(string ci, string newName, string newLastName)
         {
             if (!File.Exists(filePath)) { return false; }
@@ -85,6 +88,41 @@ namespace PatientManager.Services
             }
 
             return found;
+        }
+
+        //DELETE LOGIC 
+
+        public bool DeletePatient(string ci)
+        {
+            if (!File.Exists(filePath))
+            {
+                return false;
+            }
+
+            var lines = File.ReadAllLines(filePath);
+            var updatedLines = new List<string>();
+            bool found = false;
+
+            foreach (var line in lines)
+            {
+                var data = line.Split(",");
+
+                if (data.Length == 4 && data[2].Trim() == ci)
+                {
+                    found = true; //flag is true
+                    continue; //omitimos la linea que queremos eliminar 
+                }
+
+                updatedLines.Add(line);
+            }
+
+            if (!found)
+            {
+                return false; //por si el ci no existe 
+            }
+
+            File.WriteAllLines(filePath, updatedLines);
+            return true;
         }
     }
 }

@@ -64,7 +64,24 @@ namespace Practice2_Certi1.Controllers
         [HttpDelete("{ci}")]
         public IActionResult DeletePatient(string ci)
         {
-            return Ok("Paciente eliminado");
+            try
+            {
+                bool deleted = patientService.DeletePatient(ci);
+
+                if (!deleted)
+                {
+                    return NotFound($"No se encontro un paciente con el CI {ci}");
+
+                }
+
+                return Ok("Patient deleated sucessfully");
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error al eliminar el paciente: " + ex.Message);
+                throw ex; 
+            }
         }
 
         // Endpoint GET /patients

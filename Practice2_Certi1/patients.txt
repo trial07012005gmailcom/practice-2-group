@@ -1,6 +1,5 @@
 Mariana, Natalia, 111111111, O+
 patient, try1, 333333, O+
-Fabrizio, Ramirez, 3333333333333, B-
 string,string,33333333,AB-
 Santiago,Villarroel,3333333,A+
 Sheila,Deheza,55555555,A+
