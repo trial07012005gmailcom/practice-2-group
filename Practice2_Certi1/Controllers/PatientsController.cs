@@ -23,12 +23,12 @@ namespace Practice2_Certi1.Controllers
             try
             {
                 var newPatient = patientService.CreatePatient(patient);
-                Log.Information("New patient created successfully");
-                return Ok($"Paciente creado con grupo sanguíneo: {newPatient.BloodGroup}");
+                Log.Information($"New patient was created successfully");
+                return Ok($"New Patient with BloodGroup: {newPatient.BloodGroup}");
             }
             catch (Exception ex)
             {
-                Log.Error("Error al guardar el paciente: " + ex.Message);
+                Log.Error("Error while creating new patient: " + ex.Message);
                 throw ex; 
             }
         }
@@ -46,16 +46,16 @@ namespace Practice2_Certi1.Controllers
                 if (!updated)
                 {
                     Log.Information(" UPDATE - The patient was not found"); 
-                    return NotFound($"No se encontro un paciente con Ci {ci}");
+                    return NotFound($"The patient with CI: {ci} wasn't found.");
                 }
 
                 Log.Information("Updated the patient successfully.");
 
-                return Ok("Paciente actualizado exitosamente");
+                return Ok("Updated the patient successfully. ");
             }
             catch (Exception ex)
             {
-                Log.Error("Error al actualizar el paciente: " + ex.Message);
+                Log.Error("Error while updating the patient: " + ex.Message);
                 throw ex;
             }
         }
@@ -73,17 +73,17 @@ namespace Practice2_Certi1.Controllers
                 if (!deleted)
                 {
                     Log.Error("DELETE - Patient was not found"); 
-                    return NotFound($"No se encontro un paciente con el CI {ci}");
+                    return NotFound($"The patient with CI: {ci} wasn't found.");
 
                 }
 
-                Log.Information("Patient was deleated sucessfully"); 
-                return Ok("Patient deleated sucessfully");
+                Log.Information("Patient was deleted sucessfully"); 
+                return Ok("Patient deleted sucessfully");
 
             }
             catch (Exception ex)
             {
-                Log.Error("Error al eliminar el paciente: " + ex.Message);
+                Log.Error("Error while deleting patient: " + ex.Message);
                 throw ex; 
             }
         }
@@ -102,7 +102,7 @@ namespace Practice2_Certi1.Controllers
             }
             catch (Exception ex)
             {
-                Log.Error("Error al leer pacientes: " + ex.Message);
+                Log.Error("Error while reading patients: " + ex.Message);
                 throw ex;
             }
 
@@ -112,20 +112,23 @@ namespace Practice2_Certi1.Controllers
         [HttpGet("{ci}")]
         public IActionResult GetPatientByCi(string ci)
         {
+            Log.Information("Requested to GET a patient by CI");
             try
             {
                 var patient = patientService.GetPatientByCi(ci);
 
                 if (patient == null)
                 {
-                    return NotFound($"No se encontro un paciente con CI {ci}");
+                    Log.Information($"Patient with {ci} was not found.");
+                    return NotFound($"The patient with CI: {ci} wasn't found.");
                 }
 
+                Log.Information($"Patient {ci} has been found");
                 return Ok(patient);
             }
             catch (Exception ex)
             {
-                Log.Error("Error al buscar paciente por CI: " + ex.Message);
+                Log.Error("Error while searching for patient by CI: " + ex.Message);
                 throw ex;
             }
         }
