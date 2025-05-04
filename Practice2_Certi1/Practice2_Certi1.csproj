@@ -17,4 +17,8 @@
     <Folder Include="Managers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PatientManager\PatientManager.csproj" />
+  </ItemGroup>
+
 </Project>
