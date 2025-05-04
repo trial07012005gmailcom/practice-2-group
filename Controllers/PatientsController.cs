@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
+using Serilog;
+using Serilog.Core; 
 
 namespace Practice2_Certi1.Controllers
 {
@@ -10,7 +13,32 @@ namespace Practice2_Certi1.Controllers
         [HttpPost]
         public IActionResult CreatePatient([FromBody] PatientDto patient)
         {
-            return Ok("Paciente creado");
+            if (string.IsNullOrWhiteSpace(patient.Name) || string.IsNullOrWhiteSpace(patient.LastName) || string.IsNullOrWhiteSpace(patient.CI))
+            {
+                Log.Information("Datos incompletos por parte del cliente"); 
+                return BadRequest("Datos incompletos"); 
+            }
+
+            string[] bloodGroups ={"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" };
+            Random rnd = new Random();
+            string randomBlood = bloodGroups[rnd.Next(bloodGroups.Length)];
+
+            string line = $"{patient.Name}, {patient.LastName}, {patient.CI}, {randomBlood}";
+            string filePath = "patients.txt";
+
+            try
+            {
+                Log.Information("Creando nuevo paciente"); 
+                System.IO.File.AppendAllLines(filePath, new[] { line });
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error al guardar el paciente: " + ex.Message);
+                throw ex; 
+            }
+
+            return Ok($"Paciente creado con grupo sanguineo: {randomBlood}");
+            
         }
 
         // Endpoint PUT /patients/{ci} (actualizar nombre/apellido)
