@@ -1,6 +1,7 @@
 ﻿using PatientManager.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
@@ -123,6 +124,33 @@ namespace PatientManager.Services
 
             File.WriteAllLines(filePath, updatedLines);
             return true;
+        }
+
+        // GET BY CI LOGIC 
+
+        public PatientWithBlood GetPatientByCi(string ci)
+        {
+            if (!File.Exists(filePath)) { return null; }
+
+            var lines = File.ReadAllLines(filePath);
+
+            foreach (var line in lines)
+            {
+                var data = line.Split(",");
+
+                if (data.Length == 4 && data[2].Trim() == ci)
+                {
+                    return new PatientWithBlood
+                    {
+                        Name = data[0].Trim(),
+                        LastName = data[1].Trim(),
+                        CI = data[2].Trim(),
+                        BloodGroup = data[3].Trim(),
+                    };
+                }
+            }
+
+            return null; 
         }
     }
 }
