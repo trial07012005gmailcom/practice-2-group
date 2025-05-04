@@ -13,7 +13,7 @@ namespace Practice2_Certi1.Controllers
     public class PatientsController : ControllerBase
     {
 
-        private readonly PatientService _patientService = new PatientService();
+        private readonly PatientService patientService = new PatientService();
 
         // Endpoint POST /patients (crear paciente)
         [HttpPost]
@@ -22,14 +22,14 @@ namespace Practice2_Certi1.Controllers
             Log.Debug("Requested to create a new patient");
             try
             {
-                var newPatient = _patientService.CreatePatient(patient);
+                var newPatient = patientService.CreatePatient(patient);
                 Log.Information("New patient created successfully");
                 return Ok($"Paciente creado con grupo sanguíneo: {newPatient.BloodGroup}");
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error al guardar el paciente");
-                return StatusCode(500, "Error interno al guardar paciente.");
+                Log.Error("Error al guardar el paciente: " + ex.Message);
+                throw ex; 
             }
         }
 
@@ -37,7 +37,22 @@ namespace Practice2_Certi1.Controllers
         [HttpPut("{ci}")]
         public IActionResult UpdatePatient(string ci, [FromBody] Patient updatedPatient)
         {
-            return Ok("Paciente actualizado");
+            try
+            {
+                bool updated = patientService.UpdatePatient(ci, updatedPatient.Name, updatedPatient.LastName);
+
+                if (!updated)
+                {
+                    return NotFound($"No se encontro un paciente con Ci {ci}");
+                }
+
+                return Ok("Paciente actualizado exitosamente");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error al actualizar el paciente: " + ex.Message);
+                throw ex;
+            }
         }
 
         // Endpoint DELETE /patients/{ci}
@@ -55,14 +70,14 @@ namespace Practice2_Certi1.Controllers
 
             try
             {
-                var patients = _patientService.GetAllPatients();
+                var patients = patientService.GetAllPatients();
                 Log.Information("Got all patients from patients.txt sucessfully");
                 return Ok(patients);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error al leer pacientes");
-                return StatusCode(500, "Error interno al leer los pacientes.");
+                Log.Error("Error al leer pacientes: " + ex.Message);
+                throw ex;
             }
 
         }
