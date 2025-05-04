@@ -16,6 +16,19 @@ namespace PatientManager.Services
         //CREATE LOGIC
         public PatientWithBlood CreatePatient(Patient patient)
         {
+
+            if (patient == null || string.IsNullOrWhiteSpace(patient.Name) || string.IsNullOrWhiteSpace(patient.LastName) || string.IsNullOrWhiteSpace(patient.CI))
+            {
+                throw new ArgumentNullException("Datos del paciente invalidos");
+            }
+
+            var exists = GetAllPatients().FirstOrDefault(p => p.CI == patient.CI);
+            if (exists == null)
+            {
+                throw new ArgumentNullException($"Ya existe un paciente con CI {patient.CI})");
+            }
+
+
             string[] bloodGroups = { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" };
             string randomBlood = bloodGroups[new Random().Next(bloodGroups.Length)];
 
@@ -29,7 +42,7 @@ namespace PatientManager.Services
 
             string line = $"{fullPatient.Name},{fullPatient.LastName},{fullPatient.CI},{fullPatient.BloodGroup}";
 
-            System.IO.File.AppendAllLines(filePath, new[] { line });
+            File.AppendAllLines(filePath, new[] { line });
 
             return fullPatient;
         }
@@ -39,16 +52,20 @@ namespace PatientManager.Services
         {
             var patients = new List<PatientWithBlood>();
 
-            if (!System.IO.File.Exists(filePath))
+            if (!File.Exists(filePath))
                 return patients;
 
-            var lines = System.IO.File.ReadAllLines(filePath);
+            var lines = File.ReadAllLines(filePath);
 
             foreach (var line in lines)
             {
                 var data = line.Split(',');
 
-                if (data.Length == 4)
+                if (data.Length == 4 && 
+                    !string.IsNullOrWhiteSpace(data[0]) && 
+                    !string.IsNullOrWhiteSpace(data[1]) && 
+                    !string.IsNullOrWhiteSpace(data[2]) && 
+                    !string.IsNullOrWhiteSpace(data[3]))
                 {
                     patients.Add(new PatientWithBlood
                     {
@@ -66,6 +83,10 @@ namespace PatientManager.Services
         //UPDATE LOGIC 
         public bool UpdatePatient(string ci, string newName, string newLastName)
         {
+            if (string.IsNullOrWhiteSpace(ci)) 
+            {
+                return false; 
+            }
             if (!File.Exists(filePath)) { return false; }
 
             var lines = File.ReadAllLines(filePath);    
@@ -95,7 +116,8 @@ namespace PatientManager.Services
 
         public bool DeletePatient(string ci)
         {
-            if (!File.Exists(filePath))
+
+            if (string.IsNullOrWhiteSpace(ci) || !File.Exists(filePath))
             {
                 return false;
             }
@@ -130,7 +152,10 @@ namespace PatientManager.Services
 
         public PatientWithBlood GetPatientByCi(string ci)
         {
-            if (!File.Exists(filePath)) { return null; }
+            if (string.IsNullOrWhiteSpace(ci) || !File.Exists(filePath))
+            {
+                return null; 
+            }
 
             var lines = File.ReadAllLines(filePath);
 
