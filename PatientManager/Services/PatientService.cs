@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -57,6 +58,33 @@ namespace PatientManager.Services
             }
 
             return patients;
+        }
+
+        public bool UpdatePatient(string ci, string newName, string newLastName)
+        {
+            if (!File.Exists(filePath)) { return false; }
+
+            var lines = File.ReadAllLines(filePath);    
+            bool found = false;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var data = lines[i].Split(",");
+
+                if (data.Length == 4 && data[2].Trim() == ci)
+                {
+                    lines[i] = $"{newName},{newLastName},{data[2].Trim()},{data[3].Trim()}";
+                    found = true;
+                    break;
+                } 
+            }
+
+            if (found)
+            {
+                File.WriteAllLines(filePath, lines);
+            }
+
+            return found;
         }
     }
 }
