@@ -45,7 +45,7 @@ namespace Practice2_Certi1.Controllers
                 
                 if (!updated)
                 {
-                    Log.Information("The patient was not found"); 
+                    Log.Information(" UPDATE - The patient was not found"); 
                     return NotFound($"No se encontro un paciente con Ci {ci}");
                 }
 
@@ -64,16 +64,20 @@ namespace Practice2_Certi1.Controllers
         [HttpDelete("{ci}")]
         public IActionResult DeletePatient(string ci)
         {
+            Log.Information("Requested to delete a patient"); 
             try
             {
                 bool deleted = patientService.DeletePatient(ci);
+                
 
                 if (!deleted)
                 {
+                    Log.Error("DELETE - Patient was not found"); 
                     return NotFound($"No se encontro un paciente con el CI {ci}");
 
                 }
 
+                Log.Information("Patient was deleated sucessfully"); 
                 return Ok("Patient deleated sucessfully");
 
             }
