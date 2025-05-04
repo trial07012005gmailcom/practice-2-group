@@ -19,7 +19,7 @@ namespace Practice2_Certi1.Controllers
         [HttpPost]
         public IActionResult CreatePatient([FromBody] Patient patient)
         {
-            Log.Debug("Requested to create a new patient");
+            Log.Information("Requested to create a new patient");
             try
             {
                 var newPatient = patientService.CreatePatient(patient);
@@ -37,14 +37,19 @@ namespace Practice2_Certi1.Controllers
         [HttpPut("{ci}")]
         public IActionResult UpdatePatient(string ci, [FromBody] Patient updatedPatient)
         {
+            Log.Information("Requested to update a patient");
             try
             {
+               
                 bool updated = patientService.UpdatePatient(ci, updatedPatient.Name, updatedPatient.LastName);
-
+                
                 if (!updated)
                 {
+                    Log.Information("The patient was not found"); 
                     return NotFound($"No se encontro un paciente con Ci {ci}");
                 }
+
+                Log.Information("Updated the patient successfully.");
 
                 return Ok("Paciente actualizado exitosamente");
             }
@@ -66,7 +71,7 @@ namespace Practice2_Certi1.Controllers
         [HttpGet]
         public IActionResult GetAllPatients()
         {
-            Log.Debug("Requested to get all patients by the GET endpoint");
+            Log.Information("Requested to get all patients by the GET endpoint");
 
             try
             {
