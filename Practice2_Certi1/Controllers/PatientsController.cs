@@ -112,7 +112,22 @@ namespace Practice2_Certi1.Controllers
         [HttpGet("{ci}")]
         public IActionResult GetPatientByCi(string ci)
         {
-            return Ok();
+            try
+            {
+                var patient = patientService.GetPatientByCi(ci);
+
+                if (patient == null)
+                {
+                    return NotFound($"No se encontro un paciente con CI {ci}");
+                }
+
+                return Ok(patient);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error al buscar paciente por CI: " + ex.Message);
+                throw ex;
+            }
         }
     }
 }
