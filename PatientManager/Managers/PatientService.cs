@@ -201,7 +201,15 @@ namespace PatientManager.Services
                 {
                     GiftManager gm = new GiftManager();
                     List<Electronic> giftList = gm.GetGiftList();
-                    assignedGift = giftList[0];
+                    
+                    if (giftList.Count == 0)
+                        return null;
+
+                    Random rnd = new Random();
+                    int index = rnd.Next(giftList.Count);
+                    assignedGift = giftList[index];
+
+
                 }
             }
 
