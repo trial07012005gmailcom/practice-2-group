@@ -145,6 +145,14 @@ namespace Practice2_Certi1.Controllers
             Log.Information("Requested to assign a gift to a patient"); 
             try
             {
+                var patient = patientService.GetPatientByCi(ci);
+
+                if (patient == null)
+                {
+                    Log.Information($"Patient with {ci} was not found.");
+                    return NotFound($"The patient with CI: {ci} wasn't found.");
+                }
+
                 Electronic gift = patientService.AssingGiftToPatient(ci);
                 Log.Information("Succesfully assinged a gift to a patient");
                 return Ok($"A gift was assigned to patient: {ci}. Gift: {gift.name}");
