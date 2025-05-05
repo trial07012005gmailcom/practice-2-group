@@ -5,9 +5,11 @@ using Serilog.Core;
 using PatientManager.Models;
 using PatientManager.Services;
 using System.Runtime.InteropServices;
+using Services.Models;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Practice2_Certi1.Controllers
-{ 
+{
     [ApiController]
     [Route("[controller]")]
     public class PatientsController : ControllerBase
@@ -29,7 +31,7 @@ namespace Practice2_Certi1.Controllers
             catch (Exception ex)
             {
                 Log.Error("Error while creating new patient: " + ex.Message);
-                throw ex; 
+                throw ex;
             }
         }
 
@@ -40,12 +42,12 @@ namespace Practice2_Certi1.Controllers
             Log.Information("Requested to update a patient");
             try
             {
-               
+
                 bool updated = patientService.UpdatePatient(ci, updatedPatient.Name, updatedPatient.LastName);
-                
+
                 if (!updated)
                 {
-                    Log.Information(" UPDATE - The patient was not found"); 
+                    Log.Information(" UPDATE - The patient was not found");
                     return NotFound($"The patient with CI: {ci} wasn't found.");
                 }
 
@@ -64,27 +66,27 @@ namespace Practice2_Certi1.Controllers
         [HttpDelete("{ci}")]
         public IActionResult DeletePatient(string ci)
         {
-            Log.Information("Requested to delete a patient"); 
+            Log.Information("Requested to delete a patient");
             try
             {
                 bool deleted = patientService.DeletePatient(ci);
-                
+
 
                 if (!deleted)
                 {
-                    Log.Error("DELETE - Patient was not found"); 
+                    Log.Error("DELETE - Patient was not found");
                     return NotFound($"The patient with CI: {ci} wasn't found.");
 
                 }
 
-                Log.Information("Patient was deleted sucessfully"); 
+                Log.Information("Patient was deleted sucessfully");
                 return Ok("Patient deleted sucessfully");
 
             }
             catch (Exception ex)
             {
                 Log.Error("Error while deleting patient: " + ex.Message);
-                throw ex; 
+                throw ex;
             }
         }
 
@@ -131,6 +133,16 @@ namespace Practice2_Certi1.Controllers
                 Log.Error("Error while searching for patient by CI: " + ex.Message);
                 throw ex;
             }
+        }
+
+        //Endpoint POST /patients/{ci} FOR GIFTS
+        [HttpPost]
+        [Route("assign-gift")]
+
+        public IActionResult GetGift(string ci)
+        {
+            Electronic gift = patientService.AssingGiftToPatient(ci); 
+            return Ok($"A gift was assigned to patient: {ci}. Gift: {gift.name}"); 
         }
     }
 }

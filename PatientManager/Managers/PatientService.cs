@@ -1,9 +1,12 @@
-﻿using PatientManager.Models;
+﻿using PatientManager.Managers;
+using PatientManager.Models;
+using Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -176,6 +179,33 @@ namespace PatientManager.Services
             }
 
             return null; 
+        }
+
+
+        //LOGIC - GIFT DISTRIBUTION
+        public Electronic AssingGiftToPatient(string ci)
+        {
+            if (string.IsNullOrWhiteSpace(ci) || !File.Exists(filePath))
+            {
+                return null;
+            }
+
+            var lines = File.ReadAllLines(filePath);
+            Electronic assignedGift = new Electronic(); 
+
+            foreach (var line in lines)
+            {
+                var data = line.Split(",");
+
+                if (data.Length == 4 && data[2].Trim() == ci)
+                {
+                    GiftManager gm = new GiftManager();
+                    List<Electronic> giftList = gm.GetGiftList();
+                    assignedGift = giftList[0];
+                }
+            }
+
+            return assignedGift;
         }
     }
 }

@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Practice2_Certi1", "Practic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientManager", "PatientManager\PatientManager.csproj", "{FCCD8FE0-570B-410B-B1D5-44735CAA6C9A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{B05A72A6-FE7B-4DBF-9F6D-C48D8CA1079E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{FCCD8FE0-570B-410B-B1D5-44735CAA6C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCCD8FE0-570B-410B-B1D5-44735CAA6C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCCD8FE0-570B-410B-B1D5-44735CAA6C9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B05A72A6-FE7B-4DBF-9F6D-C48D8CA1079E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B05A72A6-FE7B-4DBF-9F6D-C48D8CA1079E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B05A72A6-FE7B-4DBF-9F6D-C48D8CA1079E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B05A72A6-FE7B-4DBF-9F6D-C48D8CA1079E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
