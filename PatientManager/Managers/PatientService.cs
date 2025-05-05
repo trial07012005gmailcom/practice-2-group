@@ -26,7 +26,7 @@ namespace PatientManager.Services
             }
 
             var exists = GetAllPatients().FirstOrDefault(p => p.CI == patient.CI);
-            if (exists == null)
+            if (exists != null)
             {
                 throw new ArgumentNullException($"Ya existe un paciente con CI {patient.CI})");
             }

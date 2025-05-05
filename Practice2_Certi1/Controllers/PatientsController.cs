@@ -17,8 +17,24 @@ namespace Practice2_Certi1.Controllers
 
         private readonly PatientService patientService = new PatientService();
 
+       /*/---------------NOTA----------------
+        * Tuve muchos errores al momento de asignar el tipo del endpoint y de manejar los errores.
+        * 
+        * Por lo cual, investigue lo que es IActionResult, que segun entendi es como una forma estandar
+        * de decirle al servidor que respuesta debe devolver a quien hizo la solicitud 
+        * 
+        * Esto normalmente se hace por codigos, donde investigue 3 
+        * return Ok() -> Codigo 200, que es la respuesta esperada 
+        * return NotFound() -> Codigo 404, que es para missing information 
+        * return StatusCode() -> Codigo 500, que es para referirse a un error interno (lo use para catch las excepciones) 
+        * 
+        * 
+        * ----------------------------------
+        * */
+
         // Endpoint POST /patients (crear paciente)
         [HttpPost]
+        [Route("create-patient")]
         public IActionResult CreatePatient([FromBody] Patient patient)
         {
             Log.Information("Requested to create a new patient");
@@ -30,13 +46,14 @@ namespace Practice2_Certi1.Controllers
             }
             catch (Exception ex)
             {
-                Log.Error("Error while creating new patient: " + ex.Message);
-                throw ex;
+                Log.Error("Error while creating new patient: " + ex.Message); 
+                return StatusCode(500, "Error creating patient.");
             }
         }
 
         // Endpoint PUT /patients/{ci} (actualizar nombre/apellido)
-        [HttpPut("{ci}")]
+        [HttpPut]
+        [Route("update-patient")]
         public IActionResult UpdatePatient(string ci, [FromBody] Patient updatedPatient)
         {
             Log.Information("Requested to update a patient");
@@ -58,12 +75,13 @@ namespace Practice2_Certi1.Controllers
             catch (Exception ex)
             {
                 Log.Error("Error while updating the patient: " + ex.Message);
-                throw ex;
+                return StatusCode(500, "Error updating patient.");
             }
         }
 
         // Endpoint DELETE /patients/{ci}
-        [HttpDelete("{ci}")]
+        [HttpDelete]
+        [Route("delete-patient")]
         public IActionResult DeletePatient(string ci)
         {
             Log.Information("Requested to delete a patient");
@@ -86,12 +104,13 @@ namespace Practice2_Certi1.Controllers
             catch (Exception ex)
             {
                 Log.Error("Error while deleting patient: " + ex.Message);
-                throw ex;
+                return StatusCode(500, "Error deleting patient.");
             }
         }
 
         // Endpoint GET /patients
         [HttpGet]
+        [Route("get-patients")]
         public IActionResult GetAllPatients()
         {
             Log.Information("Requested to get all patients by the GET endpoint");
@@ -105,13 +124,14 @@ namespace Practice2_Certi1.Controllers
             catch (Exception ex)
             {
                 Log.Error("Error while reading patients: " + ex.Message);
-                throw ex;
+                return StatusCode(500, "Error retrieving all patients.");
             }
 
         }
 
         // Endpoint GET /patients/{ci}
-        [HttpGet("{ci}")]
+        [HttpGet]
+        [Route("get-patient-ci")]
         public IActionResult GetPatientByCi(string ci)
         {
             Log.Information("Requested to GET a patient by CI");
@@ -131,8 +151,8 @@ namespace Practice2_Certi1.Controllers
             catch (Exception ex)
             {
                 Log.Error("Error while searching for patient by CI: " + ex.Message);
-                throw ex;
-                
+                return StatusCode(500, "Error retrieving patient by CI.");
+
             }
         }
 
@@ -160,7 +180,7 @@ namespace Practice2_Certi1.Controllers
             catch (Exception ex)
             {
                 Log.Error("Error whie assinging gift to a patient: " + ex.Message);
-                throw ex; 
+                return StatusCode(500, "Error assinging gift to patient.");
             }
         }
     }
