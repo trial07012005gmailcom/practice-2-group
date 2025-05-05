@@ -132,6 +132,7 @@ namespace Practice2_Certi1.Controllers
             {
                 Log.Error("Error while searching for patient by CI: " + ex.Message);
                 throw ex;
+                
             }
         }
 
@@ -141,8 +142,18 @@ namespace Practice2_Certi1.Controllers
 
         public IActionResult GetGift(string ci)
         {
-            Electronic gift = patientService.AssingGiftToPatient(ci); 
-            return Ok($"A gift was assigned to patient: {ci}. Gift: {gift.name}"); 
+            Log.Information("Requested to assign a gift to a patient"); 
+            try
+            {
+                Electronic gift = patientService.AssingGiftToPatient(ci);
+                Log.Information("Succesfully assinged a gift to a patient");
+                return Ok($"A gift was assigned to patient: {ci}. Gift: {gift.name}");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error whie assinging gift to a patient: " + ex.Message);
+                throw ex; 
+            }
         }
     }
 }
