@@ -19,11 +19,12 @@ namespace Practice2_Certi1.Controllers
         private readonly PatientService _patientService;
         private readonly GiftManager _giftManager;
 
-        public PatientsController(ILogger<PatientsController> logger, IConfiguration config, GiftManager giftManager)
+        public PatientsController(ILogger<PatientsController> logger, IConfiguration config, GiftManager giftManager, PatientService patientService)
         {
             _logger = logger;
             _config = config;
             _giftManager = giftManager;
+            _patientService = patientService;
         }
 
 
