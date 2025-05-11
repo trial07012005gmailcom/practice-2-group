@@ -11,7 +11,6 @@ namespace PatientManager.Services
     {
         private readonly string filePath = "patients.txt";
 
-        // Crear nuevo paciente con grupo sanguíneo aleatorio
         public PatientWithBlood CreatePatient(Patient patient)
         {
             if (patient == null || string.IsNullOrWhiteSpace(patient.Name) || string.IsNullOrWhiteSpace(patient.LastName) || string.IsNullOrWhiteSpace(patient.CI))
@@ -37,7 +36,6 @@ namespace PatientManager.Services
             return fullPatient;
         }
 
-        // Obtener todos los pacientes
         public List<PatientWithBlood> GetAllPatients()
         {
             if (!File.Exists(filePath))
@@ -49,7 +47,6 @@ namespace PatientManager.Services
                        .ToList();
         }
 
-        // Obtener paciente por CI
         public PatientWithBlood GetPatientByCi(string ci)
         {
             if (string.IsNullOrWhiteSpace(ci) || !File.Exists(filePath))
@@ -58,7 +55,6 @@ namespace PatientManager.Services
             return GetAllPatients().FirstOrDefault(p => p.CI == ci);
         }
 
-        // Actualizar paciente
         public bool UpdatePatient(string ci, string newName, string newLastName)
         {
             if (string.IsNullOrWhiteSpace(ci)) return false;
@@ -72,7 +68,6 @@ namespace PatientManager.Services
             return true;
         }
 
-        // Eliminar paciente
         public bool DeletePatient(string ci)
         {
             if (string.IsNullOrWhiteSpace(ci) || !File.Exists(filePath)) return false;
@@ -84,11 +79,9 @@ namespace PatientManager.Services
             return true;
         }
 
-        // Convertir paciente a línea de texto
         private string ToLine(PatientWithBlood p) =>
             $"{p.Name},{p.LastName},{p.CI},{p.BloodGroup}";
 
-        // Convertir línea de texto a paciente
         private PatientWithBlood ToPatient(string line)
         {
             var parts = line.Split(',');
@@ -101,7 +94,6 @@ namespace PatientManager.Services
             };
         }
 
-        // Asignar grupo sanguíneo aleatorio
         private string GetRandomBloodGroup()
         {
             var groups = new[] { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" };
