@@ -6,6 +6,7 @@ using PatientManager.Services;
 using Services.Models;
 using System;
 using PatientManager.Managers;
+using PatientManager.Models.DTO; 
 
 namespace Practice2_Certi1.Controllers
 {
@@ -50,18 +51,27 @@ namespace Practice2_Certi1.Controllers
 
         [HttpPost]
         [Route("")]
-        public IActionResult Create([FromBody] Patient patient)
+        public IActionResult Create([FromBody] CreatePatientDto patientDto)
         {
-            _logger.LogInformation($"C - POST /patients called to create CI: {patient.CI}");
+            
             try
             {
+                var patient = new Patient
+                {
+                    Name = patientDto.Name,
+                    LastName = patientDto.LastName,
+                    CI = patientDto.CI
+                };
+                _logger.LogInformation($"C - POST /patients called to create CI: {patient.CI}");
+
                 var created = _patientService.CreatePatient(patient);
+
                 _logger.LogInformation($"C - Patient with CI '{patient.CI}' created successfully.");
                 return Ok($"Patient created successfully. BloodGroup: {created.BloodGroup}");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"C - Error creating patient with CI '{patient.CI}'");
+                _logger.LogError(ex, $"C - Error creating patient");
                 return Conflict(ex.Message);
             }
         }
