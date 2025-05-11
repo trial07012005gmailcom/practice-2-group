@@ -78,7 +78,7 @@ namespace Practice2_Certi1.Controllers
 
         [HttpPut]
         [Route("{ci}")]
-        public IActionResult Update(string ci, [FromBody] Patient updated)
+        public IActionResult Update(string ci, [FromBody] UpdatePatientDto updated)
         {
             _logger.LogInformation($"U - PUT /patients/{ci} called to update.");
 
