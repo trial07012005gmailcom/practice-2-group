@@ -129,5 +129,33 @@ namespace Practice2_Certi1.Controllers
                 return StatusCode(500, "Failed to retrieve gifts.");
             }
         }
+
+        [HttpPost]
+        [Route("{ci}/gift")]
+        public IActionResult AssignGiftToPatient(string ci)
+        {
+            _logger.LogInformation($"C - POST /patients/{ci}/gift called.");
+
+            var giftManager = new GiftManager(_config);
+
+            try
+            {
+                var gift = giftManager.AssignGiftToPatient(ci, _patientService).Result;
+
+                if (gift == null)
+                {
+                    _logger.LogWarning($"Gift assignment failed. Patient CI '{ci}' not found or no gifts available.");
+                    return NotFound("Patient not found or no gifts available.");
+                }
+
+                return Ok($"Patient with CI '{ci}' was awarded the gift '{gift.name}' with the ID '{gift.id}'.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error assigning gift to patient.");
+                return StatusCode(500, "Internal server error during gift assignment.");
+            }
+        }
+
     }
 }
