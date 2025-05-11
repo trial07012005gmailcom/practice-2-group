@@ -1,6 +1,7 @@
 using PatientManager.Managers;
 using PatientManager.Services;
 using Serilog;
+using Services.ExternalServices;
 using System.Security.Cryptography.Xml;
 
 
@@ -22,7 +23,8 @@ builder.Services.AddScoped<GiftManager>(); //Scoped porque usa servicios como El
                                            //no necesita estar en la memoria todo el tiempo y no debe recrearse en cada llamada 
 builder.Services.AddScoped<PatientService>(); //Usa archivo físico y se llama varias veces por request
 
-
+builder.Services.AddScoped<ElectronicStoreService>(); //Hace llamadas HTTP externas, entonces no es completamente liviano (Transient)
+                                                      //Y tienen una dependencia inyectada, entonces debe mantenerse estable durante solo un request 
 
 var app = builder.Build();
 

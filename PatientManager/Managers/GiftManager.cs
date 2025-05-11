@@ -19,7 +19,7 @@ namespace PatientManager.Managers
 
         public async Task<List<Electronic>> GetGiftsAsync()
         {
-            return await _store.GetAllElectronicItems(_config);
+            return await _store.GetAllElectronicItems();
         }
 
         public async Task<Electronic?> AssignGiftToPatient(string ci, Services.PatientService patientService)

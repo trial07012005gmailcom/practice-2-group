@@ -15,22 +15,22 @@ namespace Services.ExternalServices
         public ElectronicStoreService(IConfiguration config)
         {
             _http = new HttpClient();
-            _url = config["GiftApi:Url"];  // 🔥 Valor leído desde appsettings.json
+            _url = config["GiftApi:Url"];
         }
 
-        public async Task<List<Electronic>> GetAllElectronicItems(IConfiguration config)
+        public async Task<List<Electronic>> GetAllElectronicItems()
         {
             var response = await _http.GetAsync(_url);
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
 
-            var electronicItems = JsonSerializer.Deserialize<List<Electronic>>(json, new JsonSerializerOptions
+            var items = JsonSerializer.Deserialize<List<Electronic>>(json, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
 
-            return electronicItems ?? new List<Electronic>();
+            return items ?? new List<Electronic>();
         }
     }
 }
