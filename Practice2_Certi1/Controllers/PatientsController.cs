@@ -17,24 +17,9 @@ namespace Practice2_Certi1.Controllers
 
         private readonly PatientService patientService = new PatientService();
 
-       /*/---------------NOTA----------------
-        * Tuve muchos errores al momento de asignar el tipo del endpoint y de manejar los errores.
-        * 
-        * Por lo cual, investigue lo que es IActionResult, que segun entendi es como una forma estandar
-        * de decirle al servidor que respuesta debe devolver a quien hizo la solicitud 
-        * 
-        * Esto normalmente se hace por codigos, donde investigue 3 
-        * return Ok() -> Codigo 200, que es la respuesta esperada 
-        * return NotFound() -> Codigo 404, que es para missing information 
-        * return StatusCode() -> Codigo 500, que es para referirse a un error interno (lo use para catch las excepciones) 
-        * 
-        * 
-        * ----------------------------------
-        * */
-
         // Endpoint POST /patients (crear paciente)
         [HttpPost]
-        [Route("create-patient")]
+        [Route("")]
         public IActionResult CreatePatient([FromBody] Patient patient)
         {
             Log.Information("Requested to create a new patient");
@@ -53,7 +38,7 @@ namespace Practice2_Certi1.Controllers
 
         // Endpoint PUT /patients/{ci} (actualizar nombre/apellido)
         [HttpPut]
-        [Route("update-patient")]
+        [Route("{ci}")]
         public IActionResult UpdatePatient(string ci, [FromBody] Patient updatedPatient)
         {
             Log.Information("Requested to update a patient");
@@ -81,7 +66,7 @@ namespace Practice2_Certi1.Controllers
 
         // Endpoint DELETE /patients/{ci}
         [HttpDelete]
-        [Route("delete-patient")]
+        [Route("{ci}")]
         public IActionResult DeletePatient(string ci)
         {
             Log.Information("Requested to delete a patient");
@@ -110,7 +95,7 @@ namespace Practice2_Certi1.Controllers
 
         // Endpoint GET /patients
         [HttpGet]
-        [Route("get-patients")]
+        [Route("")]
         public IActionResult GetAllPatients()
         {
             Log.Information("Requested to get all patients by the GET endpoint");
@@ -131,7 +116,7 @@ namespace Practice2_Certi1.Controllers
 
         // Endpoint GET /patients/{ci}
         [HttpGet]
-        [Route("get-patient-ci")]
+        [Route("{ci}")]
         public IActionResult GetPatientByCi(string ci)
         {
             Log.Information("Requested to GET a patient by CI");
@@ -158,7 +143,7 @@ namespace Practice2_Certi1.Controllers
 
         //Endpoint POST /patients/{ci} FOR GIFTS
         [HttpPost]
-        [Route("assign-gift")]
+        [Route("gift")]
 
         public IActionResult GetGift(string ci)
         {
