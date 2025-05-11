@@ -17,13 +17,16 @@ namespace Practice2_Certi1.Controllers
         private readonly ILogger<PatientsController> _logger;
         private readonly IConfiguration _config;
         private readonly PatientService _patientService;
+        private readonly GiftManager _giftManager;
 
-        public PatientsController(ILogger<PatientsController> logger, IConfiguration config)
+        public PatientsController(ILogger<PatientsController> logger, IConfiguration config, GiftManager giftManager)
         {
             _logger = logger;
             _config = config;
-            _patientService = new PatientService(); // por ahora sin DI
+            _giftManager = giftManager;
         }
+
+
 
         [HttpGet]
         [Route("")]
@@ -116,7 +119,7 @@ namespace Practice2_Certi1.Controllers
         {
             _logger.LogInformation("R - GET /patients/gift called.");
 
-            var giftManager = new GiftManager(_config); // versión de ClinicSolution
+            var giftManager = _giftManager;
 
             try
             {
@@ -135,8 +138,8 @@ namespace Practice2_Certi1.Controllers
         public IActionResult AssignGiftToPatient(string ci)
         {
             _logger.LogInformation($"C - POST /patients/{ci}/gift called.");
-
-            var giftManager = new GiftManager(_config);
+      
+            var giftManager = _giftManager;
 
             try
             {

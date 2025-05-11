@@ -1,3 +1,4 @@
+using PatientManager.Managers;
 using Serilog;
 using System.Security.Cryptography.Xml;
 
@@ -15,6 +16,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<GiftManager>(); //Scoped porque usa servicios como ElectronicStoreService y IConfiguration,
+                                           //no necesita estar en la memoria todo el tiempo y no debe recrearse en cada llamada 
 
 var app = builder.Build();
 
