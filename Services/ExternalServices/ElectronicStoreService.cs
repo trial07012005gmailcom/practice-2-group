@@ -18,7 +18,7 @@ namespace Services.ExternalServices
             _url = config["GiftApi:Url"];  // 🔥 Valor leído desde appsettings.json
         }
 
-        public async Task<List<Electronic>> GetAllElectronicItems()
+        public async Task<List<Electronic>> GetAllElectronicItems(IConfiguration config)
         {
             var response = await _http.GetAsync(_url);
             response.EnsureSuccessStatusCode();
