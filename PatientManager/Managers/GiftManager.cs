@@ -4,35 +4,22 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Services.Models;
+using Services.ExternalServices;
 
 namespace PatientManager.Managers
 {
     public class GiftManager
     {
-        private readonly HttpClient _http;
-        private readonly string _url;
+        private readonly ElectronicStoreService _store;
 
         public GiftManager(IConfiguration config)
         {
-            _http = new HttpClient();
-            _url = config["GiftApi:Url"];
+            _store = new ElectronicStoreService(config);
         }
 
         public async Task<List<Electronic>> GetGiftsAsync()
         {
-            var response = await _http.GetAsync(_url);
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception("Failed to get gifts from external API");
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            var gifts = JsonSerializer.Deserialize<List<Electronic>>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            return gifts ?? new List<Electronic>();
+            return await _store.GetAllElectronicItems();
         }
     }
 }

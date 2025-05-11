@@ -9,7 +9,7 @@ namespace Services.Models
     public class Electronic
     {
 
-        public int id { get; set; }
+        public string id { get; set; }
 
         public string name { get; set; }
         
