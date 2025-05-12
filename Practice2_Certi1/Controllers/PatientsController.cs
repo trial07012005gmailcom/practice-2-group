@@ -6,7 +6,8 @@ using PatientManager.Services;
 using Services.Models;
 using System;
 using PatientManager.Managers;
-using PatientManager.Models.DTO; 
+using PatientManager.Models.DTO;
+using Services.ExternalServices;
 
 namespace Practice2_Certi1.Controllers
 {
@@ -18,14 +19,23 @@ namespace Practice2_Certi1.Controllers
         private readonly IConfiguration _config;
         private readonly PatientService _patientService;
         private readonly GiftManager _giftManager;
+        private readonly PatientCodeService _patientCodeService;
 
-        public PatientsController(ILogger<PatientsController> logger, IConfiguration config, GiftManager giftManager, PatientService patientService)
+
+        public PatientsController(
+        ILogger<PatientsController> logger,
+        IConfiguration config,
+        GiftManager giftManager,
+        PatientService patientService,
+        PatientCodeService patientCodeService) 
         {
             _logger = logger;
             _config = config;
             _giftManager = giftManager;
             _patientService = patientService;
+            _patientCodeService = patientCodeService; // ⬅️ asignación
         }
+
 
 
 
@@ -165,6 +175,33 @@ namespace Practice2_Certi1.Controllers
                 return StatusCode(500, "Internal server error during gift assignment.");
             }
         }
+
+        [HttpGet]
+        [Route("testcode/{ci}")]
+        public async Task<IActionResult> GetCodeFromAPI(string ci)
+        {
+            var patient = _patientService.GetPatientByCi(ci);
+            if (patient == null)
+                return NotFound("Paciente no encontrado");
+
+            try
+            {
+                var code = await _patientCodeService.GetPatientCodeAsync(patient.Name, patient.LastName, patient.CI);
+                return Ok(new
+                {
+                    ci = patient.CI,
+                    name = patient.Name,
+                    lastName = patient.LastName,
+                    code = code
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al generar el código desde API externa");
+                return StatusCode(500, "Error al generar el código");
+            }
+        }
+
 
     }
 }

@@ -46,5 +46,7 @@ namespace Services.ExternalServices
 
             return result.PatientCode;
         }
+
+
     }
 }
