@@ -25,6 +25,7 @@ builder.Services.AddScoped<PatientService>(); //Usa archivo físico y se llama va
 
 builder.Services.AddScoped<ElectronicStoreService>(); //Hace llamadas HTTP externas, entonces no es completamente liviano (Transient)
                                                       //Y tienen una dependencia inyectada, entonces debe mantenerse estable durante solo un request 
+builder.Services.AddHttpClient<PatientCodeService>();
 
 var app = builder.Build();
 

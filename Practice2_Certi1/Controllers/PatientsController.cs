@@ -55,7 +55,7 @@ namespace Practice2_Certi1.Controllers
 
         [HttpPost]
         [Route("")]
-        public IActionResult Create([FromBody] CreatePatientDto patientDto)
+        public async Task<IActionResult> Create([FromBody] CreatePatientDto patientDto)
         {
             
             try
@@ -68,10 +68,15 @@ namespace Practice2_Certi1.Controllers
                 };
                 _logger.LogInformation($"C - POST /patients called to create CI: {patient.CI}");
 
-                var created = _patientService.CreatePatient(patient);
+                var created = await _patientService.CreatePatient(patient);
 
                 _logger.LogInformation($"C - Patient with CI '{patient.CI}' created successfully.");
-                return Ok($"Patient created successfully. BloodGroup: {created.BloodGroup}");
+                return Ok(new
+                {
+                    Message = "Patient created successfully.",
+                    BloodGroup = created.BloodGroup,
+                    PatientCode = created.PatientCode
+                });
             }
             catch (Exception ex)
             {

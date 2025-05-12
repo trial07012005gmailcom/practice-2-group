@@ -4,14 +4,22 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Services.ExternalServices;
+
 
 namespace PatientManager.Services
 {
     public class PatientService
     {
         private readonly string filePath = "patients.txt";
+        private readonly PatientCodeService _codeService;
 
-        public PatientWithBlood CreatePatient(Patient patient)
+        public PatientService(PatientCodeService codeService)
+        {
+            _codeService = codeService;
+        }
+
+        public async Task<PatientWithBlood> CreatePatient(Patient patient)
         {
             if (patient == null || string.IsNullOrWhiteSpace(patient.Name) || string.IsNullOrWhiteSpace(patient.LastName) || string.IsNullOrWhiteSpace(patient.CI))
             {
@@ -31,6 +39,8 @@ namespace PatientManager.Services
                 CI = patient.CI,
                 BloodGroup = GetRandomBloodGroup()
             };
+
+            fullPatient.PatientCode = await _codeService.GetPatientCodeAsync(patient.Name, patient.LastName, patient.CI);
 
             File.AppendAllLines(filePath, new[] { ToLine(fullPatient) });
             return fullPatient;
@@ -80,7 +90,7 @@ namespace PatientManager.Services
         }
 
         private string ToLine(PatientWithBlood p) =>
-            $"{p.Name},{p.LastName},{p.CI},{p.BloodGroup}";
+            $"{p.Name},{p.LastName},{p.CI},{p.BloodGroup},{p.PatientCode}";
 
         private PatientWithBlood ToPatient(string line)
         {
@@ -90,7 +100,8 @@ namespace PatientManager.Services
                 Name = parts[0],
                 LastName = parts[1],
                 CI = parts[2],
-                BloodGroup = parts[3]
+                BloodGroup = parts[3],
+                PatientCode = parts.Length > 4 ? parts[4] : null
             };
         }
 
