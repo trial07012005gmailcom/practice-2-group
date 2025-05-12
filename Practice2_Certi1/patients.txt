@@ -3,3 +3,5 @@ patient, try1, 333333, O+
 Santiago,Villarroel,3333333,A+
 Sheila,Deheza,55555555,A+
 Sheila,Deheza,55555555,AB+
+prueba,prueba,123456,AB+
+prueba,prueba,1234567,B-

@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PatientManager.Models
+namespace Services.Models
 {
-    public class PatientWithBlood : Patient
+    public class PatientCodeResponse
     {
-        public string BloodGroup { get; set; }
         public string PatientCode { get; set; }
-
     }
 }
