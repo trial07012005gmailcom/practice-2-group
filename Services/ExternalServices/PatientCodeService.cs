@@ -35,7 +35,8 @@ namespace Services.ExternalServices
             var json = JsonConvert.SerializeObject(body);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var url = $"{_baseUrl}/api/patientcode/generate";
+            // 🔧 Ruta corregida con mayúsculas
+            var url = $"{_baseUrl}/api/PatientCode/generate";
 
             var response = await _httpClient.PostAsync(url, content);
             response.EnsureSuccessStatusCode();
