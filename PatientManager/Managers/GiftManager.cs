@@ -1,21 +1,39 @@
-﻿using Services.ExternalServices;
-using Services.Models;
-using System;
+﻿using Services.Models;
+using Services.ExternalServices;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PatientManager.Managers
 {
     public class GiftManager
     {
-        public GiftManager() { }
+        private readonly IConfiguration _config;
+        private readonly ElectronicStoreService _store;
 
-        public List<Electronic> GetGiftList()
+        public GiftManager(IConfiguration config, ElectronicStoreService store)
         {
-            ElectronicStoreService ess = new ElectronicStoreService(); 
-            return ess.GetAllElectronicItems().Result;
+            _config = config;
+            _store = store;
+        }
+
+        public async Task<List<Electronic>> GetGiftsAsync()
+        {
+            return await _store.GetAllElectronicItems();
+        }
+
+        public async Task<Electronic?> AssignGiftToPatient(string ci, Services.PatientService patientService)
+        {
+            var patient = patientService.GetPatientByCi(ci);
+            if (patient == null)
+                return null;
+
+            var gifts = await GetGiftsAsync();
+            if (gifts.Count == 0)
+                return null;
+
+            var rnd = new Random();
+            return gifts[rnd.Next(gifts.Count)];
         }
     }
 }

@@ -1,189 +1,170 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics.CodeAnalysis;
-using Serilog;
-using Serilog.Core;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using PatientManager.Models;
 using PatientManager.Services;
-using System.Runtime.InteropServices;
 using Services.Models;
-using Serilog.Sinks.SystemConsole.Themes;
+using System;
+using PatientManager.Managers;
+using PatientManager.Models.DTO; 
 
 namespace Practice2_Certi1.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("patients")]
     public class PatientsController : ControllerBase
     {
+        private readonly ILogger<PatientsController> _logger;
+        private readonly IConfiguration _config;
+        private readonly PatientService _patientService;
+        private readonly GiftManager _giftManager;
 
-        private readonly PatientService patientService = new PatientService();
-
-       /*/---------------NOTA----------------
-        * Tuve muchos errores al momento de asignar el tipo del endpoint y de manejar los errores.
-        * 
-        * Por lo cual, investigue lo que es IActionResult, que segun entendi es como una forma estandar
-        * de decirle al servidor que respuesta debe devolver a quien hizo la solicitud 
-        * 
-        * Esto normalmente se hace por codigos, donde investigue 3 
-        * return Ok() -> Codigo 200, que es la respuesta esperada 
-        * return NotFound() -> Codigo 404, que es para missing information 
-        * return StatusCode() -> Codigo 500, que es para referirse a un error interno (lo use para catch las excepciones) 
-        * 
-        * 
-        * ----------------------------------
-        * */
-
-        // Endpoint POST /patients (crear paciente)
-        [HttpPost]
-        [Route("create-patient")]
-        public IActionResult CreatePatient([FromBody] Patient patient)
+        public PatientsController(ILogger<PatientsController> logger, IConfiguration config, GiftManager giftManager, PatientService patientService)
         {
-            Log.Information("Requested to create a new patient");
+            _logger = logger;
+            _config = config;
+            _giftManager = giftManager;
+            _patientService = patientService;
+        }
+
+
+
+        [HttpGet]
+        [Route("")]
+        public IActionResult GetAll()
+        {
+            _logger.LogInformation("R - GET /patients called.");
+            var patients = _patientService.GetAllPatients();
+            return Ok(patients);
+        }
+
+        [HttpGet]
+        [Route("{ci}")]
+        public IActionResult GetByCI(string ci)
+        {
+            _logger.LogInformation($"R - GET /patients/{ci} called.");
+            var patient = _patientService.GetPatientByCi(ci);
+            if (patient == null)
+            {
+                _logger.LogWarning($"R - Patient with CI '{ci}' not found.");
+                return NotFound("Patient not found");
+            }
+
+            return Ok(patient);
+        }
+
+        [HttpPost]
+        [Route("")]
+        public async Task<IActionResult> Create([FromBody] CreatePatientDto patientDto)
+        {
+            
             try
             {
-                var newPatient = patientService.CreatePatient(patient);
-                Log.Information($"New patient was created successfully");
-                return Ok($"New Patient with BloodGroup: {newPatient.BloodGroup}");
+                var patient = new Patient
+                {
+                    Name = patientDto.Name,
+                    LastName = patientDto.LastName,
+                    CI = patientDto.CI
+                };
+                _logger.LogInformation($"C - POST /patients called to create CI: {patient.CI}");
+
+                var created = await _patientService.CreatePatient(patient);
+
+                _logger.LogInformation($"C - Patient with CI '{patient.CI}' created successfully.");
+                return Ok(new
+                {
+                    Message = "Patient created successfully.",
+                    BloodGroup = created.BloodGroup,
+                    PatientCode = created.PatientCode
+                });
             }
             catch (Exception ex)
             {
-                Log.Error("Error while creating new patient: " + ex.Message); 
-                return StatusCode(500, "Error creating patient.");
+                _logger.LogError(ex, $"C - Error creating patient");
+                return Conflict(ex.Message);
             }
         }
 
-        // Endpoint PUT /patients/{ci} (actualizar nombre/apellido)
         [HttpPut]
-        [Route("update-patient")]
-        public IActionResult UpdatePatient(string ci, [FromBody] Patient updatedPatient)
+        [Route("{ci}")]
+        public IActionResult Update(string ci, [FromBody] UpdatePatientDto updated)
         {
-            Log.Information("Requested to update a patient");
-            try
+            _logger.LogInformation($"U - PUT /patients/{ci} called to update.");
+
+            var success = _patientService.UpdatePatient(ci, updated.Name, updated.LastName);
+            if (!success)
             {
-
-                bool updated = patientService.UpdatePatient(ci, updatedPatient.Name, updatedPatient.LastName);
-
-                if (!updated)
-                {
-                    Log.Information(" UPDATE - The patient was not found");
-                    return NotFound($"The patient with CI: {ci} wasn't found.");
-                }
-
-                Log.Information("Updated the patient successfully.");
-
-                return Ok("Updated the patient successfully. ");
+                _logger.LogWarning($"U - Patient with CI '{ci}' not found for update.");
+                return NotFound("Patient not found");
             }
-            catch (Exception ex)
-            {
-                Log.Error("Error while updating the patient: " + ex.Message);
-                return StatusCode(500, "Error updating patient.");
-            }
+
+            _logger.LogInformation($"U - Patient with CI '{ci}' updated successfully.");
+            return Ok("Patient updated successfully");
         }
 
-        // Endpoint DELETE /patients/{ci}
         [HttpDelete]
-        [Route("delete-patient")]
-        public IActionResult DeletePatient(string ci)
+        [Route("{ci}")]
+        public IActionResult Delete(string ci)
         {
-            Log.Information("Requested to delete a patient");
-            try
+            _logger.LogInformation($"D - DELETE /patients/{ci} called.");
+
+            var success = _patientService.DeletePatient(ci);
+            if (!success)
             {
-                bool deleted = patientService.DeletePatient(ci);
-
-
-                if (!deleted)
-                {
-                    Log.Error("DELETE - Patient was not found");
-                    return NotFound($"The patient with CI: {ci} wasn't found.");
-
-                }
-
-                Log.Information("Patient was deleted sucessfully");
-                return Ok("Patient deleted sucessfully");
-
+                _logger.LogWarning($"D - Patient with CI '{ci}' not found for deletion.");
+                return NotFound("Patient not found");
             }
-            catch (Exception ex)
-            {
-                Log.Error("Error while deleting patient: " + ex.Message);
-                return StatusCode(500, "Error deleting patient.");
-            }
+
+            _logger.LogInformation($"D - Patient with CI '{ci}' deleted successfully.");
+            return Ok("Patient deleted successfully.");
         }
 
-        // Endpoint GET /patients
         [HttpGet]
-        [Route("get-patients")]
-        public IActionResult GetAllPatients()
+        [Route("gift")]
+        public IActionResult GetGifts()
         {
-            Log.Information("Requested to get all patients by the GET endpoint");
+            _logger.LogInformation("R - GET /patients/gift called.");
+
+            var giftManager = _giftManager;
 
             try
             {
-                var patients = patientService.GetAllPatients();
-                Log.Information("Got all patients from patients.txt sucessfully");
-                return Ok(patients);
+                var gifts = giftManager.GetGiftsAsync().Result;
+                return Ok(gifts);
             }
             catch (Exception ex)
             {
-                Log.Error("Error while reading patients: " + ex.Message);
-                return StatusCode(500, "Error retrieving all patients.");
-            }
-
-        }
-
-        // Endpoint GET /patients/{ci}
-        [HttpGet]
-        [Route("get-patient-ci")]
-        public IActionResult GetPatientByCi(string ci)
-        {
-            Log.Information("Requested to GET a patient by CI");
-            try
-            {
-                var patient = patientService.GetPatientByCi(ci);
-
-                if (patient == null)
-                {
-                    Log.Information($"Patient with {ci} was not found.");
-                    return NotFound($"The patient with CI: {ci} wasn't found.");
-                }
-
-                Log.Information($"Patient {ci} has been found");
-                return Ok(patient);
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Error while searching for patient by CI: " + ex.Message);
-                return StatusCode(500, "Error retrieving patient by CI.");
-
+                _logger.LogError(ex, "R - Error retrieving gifts from external API.");
+                return StatusCode(500, "Failed to retrieve gifts.");
             }
         }
 
-        //Endpoint POST /patients/{ci} FOR GIFTS
         [HttpPost]
-        [Route("assign-gift")]
-
-        public IActionResult GetGift(string ci)
+        [Route("{ci}/gift")]
+        public IActionResult AssignGiftToPatient(string ci)
         {
-            Log.Information("Requested to assign a gift to a patient"); 
+            _logger.LogInformation($"C - POST /patients/{ci}/gift called.");
+      
+            var giftManager = _giftManager;
+
             try
             {
-                var patient = patientService.GetPatientByCi(ci);
+                var gift = giftManager.AssignGiftToPatient(ci, _patientService).Result;
 
-                if (patient == null)
+                if (gift == null)
                 {
-                    Log.Information($"Patient with {ci} was not found.");
-                    return NotFound($"The patient with CI: {ci} wasn't found.");
+                    _logger.LogWarning($"Gift assignment failed. Patient CI '{ci}' not found or no gifts available.");
+                    return NotFound("Patient not found or no gifts available.");
                 }
 
-                Electronic gift = patientService.AssingGiftToPatient(ci);
-                Log.Information("Succesfully assinged a gift to a patient");
-                return Ok($"A gift was assigned to patient: {ci}. Gift: {gift.name}");
+                return Ok($"Patient with CI '{ci}' was awarded the gift '{gift.name}' with the ID '{gift.id}'.");
             }
             catch (Exception ex)
             {
-                Log.Error("Error whie assinging gift to a patient: " + ex.Message);
-                return StatusCode(500, "Error assinging gift to patient.");
+                _logger.LogError(ex, "Error assigning gift to patient.");
+                return StatusCode(500, "Internal server error during gift assignment.");
             }
         }
+
     }
 }
-
-
